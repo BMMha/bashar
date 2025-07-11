@@ -1,1 +1,193 @@
-hjgggg
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyRight - بيئة التطوير</title>
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base styles and font */
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f7faff; /* A very light, professional blue-gray */
+            color: #1e293b; /* A dark slate color for text */
+        }
+
+        /* A simple fade-in animation for smoother page transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+      .logo-container-bug {
+            width: 140px;
+            flex-shrink: 0;
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app">
+
+        <!-- =================================================================== -->
+           <!-- =================================================================== -->
+        <div id="home" class="page active">
+            <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <div class="text-3xl font-bold text-indigo-600 tracking-wider">FlyRight</div>
+                    <div class="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
+
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 transition-colors">من نحن</a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 transition-colors">الأسعار</a>
+                        <a href="#" onclick="showPage('privacy')" class="text-gray-500 hover:text-indigo-600 transition-colors">سياسة الخصوصية</a>
+                    </div>
+                </nav>
+            </header>
+
+            <main class="container mx-auto px-6 pt-24 pb-32 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-slate-800 mb-4 leading-tight">رحلاتك، منظمة بذكاء.</h1>
+                <p class="text-lg text-slate-600 mb-10 max-w-3xl mx-auto">يقوم FlyRight تلقائيًا بجمع حجوزات الطيران من بريدك الإلكتروني وتحويلها إلى خط سير رحلة بسيط وجميل.</p>
+
+
+                <a href="/login" class="inline-block bg-indigo-600 text-white font-bold px-10 py-4 rounded-lg text-xl hover:bg-indigo-700 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                    سجل الدخول للمراجعة
+                </a>
+                <p class="text-sm text-gray-500 mt-4">الوصول حاليًا متاح للمختبرين المعتمدين فقط.</p>
+            </main>
+        </div>
+
+        <!-- =================================================================== -->
+
+        <!-- =================================================================== -->
+        <div id="dashboard" class="page">
+            <header class="bg-white shadow-sm">
+                 <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-indigo-600">لوحة تحكم المطور</h1>
+                    <a href="#" onclick="logout()" class="text-gray-500 hover:text-indigo-600 transition-colors">تسجيل الخروج</a>
+                </nav>
+            </header>
+            <main class="container mx-auto px-6 py-10">
+                <h2 class="text-3xl font-bold mb-6 text-slate-800">مرحباً، هذه بيانات الاختبار.</h2>
+
+
+                <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 mb-8 rounded-r-lg" role="alert">
+                    <p class="font-bold">ملاحظة للمراجع:</p>
+                    <p>هذه هي البطاقة التي بها مشكلة في التصميم. كما ترى، شعار شركة الطيران يخرج من الإطار. البطاقة التي تليها سليمة للمقارنة.</p>
+                </div>
+
+
+                <div class="bg-white p-5 rounded-xl shadow-lg mb-8 flex items-center space-x-6 rtl:space-x-reverse overflow-hidden">
+
+                    <div class="logo-container-bug">
+                        <img src="https://i.ibb.co/Kx3XxC2B/em-air-logo.png&font=sans" alt="شعار طيران وهمي" class="rounded-md object-contain">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-bold text-xl text-slate-700 truncate">دبي (DXB) &larr; لندن (LHR)</span>
+                            <span class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">يوجد خلل</span>
+                        </div>
+                        <p class="text-slate-500">التاريخ: 15 أغسطس 2025 | رقم الرحلة: EK007</p>
+                    </div>
+                </div>
+
+
+                <div class="bg-white p-5 rounded-xl shadow-lg mb-8 flex items-center space-x-6 rtl:space-x-reverse">
+
+                    <div class="w-24 flex-shrink-0">
+                         <img src="https://i.ibb.co/v48n87Tb/qatar.png&font=sans" alt="شعار طيران وهمي" class="rounded-md object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-bold text-xl text-slate-700">الدوحة (DOH) &larr; نيويورك (JFK)</span>
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">سليم</span>
+                        </div>
+                        <p class="text-slate-500">التاريخ: 22 سبتمبر 2025 | رقم الرحلة: QR701</p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- 3. The Privacy Policy Page (Adds a layer of legitimacy) -->
+        <!-- =================================================================== -->
+        <div id="privacy" class="page">
+             <header class="bg-white shadow-sm">
+                 <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                    <div class="text-2xl font-bold text-indigo-600">سياسة الخصوصية</div>
+                    <a href="#" onclick="showPage('home')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+                        &larr; العودة للرئيسية
+                    </a>
+                </nav>
+            </header>
+            <main class="container mx-auto px-6 py-12 max-w-4xl">
+                <h1 class="text-3xl font-bold mb-6 text-slate-800">سياسة الخصوصية لتطبيق FlyRight (بيئة التطوير)</h1>
+                <p class="mb-4 text-gray-500">آخر تحديث: 7 يوليو 2025</p>
+                <div class="space-y-6 text-lg leading-relaxed text-slate-700">
+                    <p>يلتزم تطبيق FlyRight بحماية خصوصيتك. توضح هذه السياسة كيف نجمع ونستخدم بياناتك. عند الموافقة، نسمح لنظامنا الآلي بالوصول إلى بريدك الإلكتروني باستخدام صلاحية `gmail.readonly` للبحث عن وتحديد رسائل تأكيد حجوزات الطيران فقط. يتم استخدام هذه البيانات لاستخلاص تفاصيل الرحلة وعرضها لك في لوحة التحكم.</p>
+                    <p>نحن نلتزم بسياسة الاستخدام المحدود من جوجل ولا نشارك بياناتك مع أي طرف ثالث. يمكنك إلغاء الوصول في أي وقت من إعدادات حسابك في جوجل.</p>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <script>
+        // Simple JavaScript to simulate a single-page application (SPA)
+        const pages = document.querySelectorAll('.page');
+
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            const newPage = document.getElementById(pageId);
+            if (newPage) {
+                newPage.classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function login() {
+
+
+            console.log("Simulating login... Redirecting to dashboard.");
+            showPage('dashboard');
+        }
+
+        function logout() {
+            // Simply returns to the home page
+            console.log("Logging out...");
+            showPage('home');
+        }
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. تحقق مما إذا كان هناك "هاش" في الرابط
+    const hash = window.location.hash;
+
+    // 2. إذا كان الرابط يحتوي على #dashboard
+    if (hash === '#dashboard') {
+        // 3. قم بعرض قسم لوحة التحكم
+        showPage('dashboard');
+    } else {
+        // 4. وإلا، قم بعرض الصفحة الرئيسية بشكل طبيعي
+        showPage('home');
+    }
+});
+        // Initially show the home page when the site loads
+    </script>
+</body>
+</html>
