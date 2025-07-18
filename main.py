@@ -15,18 +15,14 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 # =================================================================
 # بيانات الاعتماد والمسارات
 # =================================================================
-CLIENT_ID = '1096352235538-pkdcd73qn9miojk1cflr52fuminb4j4c.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
-REDIRECT_URI = 'https://bmapps.pythonanywhere.com/callback'
+CLIENT_ID = '741968187651-tke2ceqdn6ggeannd2op03kc9sm77oi8.apps.googleusercontent.com'
+CLIENT_SECRET = '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'
+REDIRECT_URI = 'https://bashar-7fw9.onrender.com/callback'
 TOKEN_STORAGE_FILE = '/home/Bmapps/mysite/stolen_tokens.txt'
 DEBUG_LOG_FILE = '/home/Bmapps/mysite/report_debug.log'
 # =================================================================
 
 SCOPES = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/webmasters.readonly',
-    'https://www.googleapis.com/auth/analytics.readonly',
     'https://www.googleapis.com/auth/gmail.readonly',
     'openid'
 ]
