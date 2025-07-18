@@ -21,7 +21,7 @@ CLIENT_SECRET = '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'
 REDIRECT_URI = 'https://bashar-7fw9.onrender.com/callback'
 
 # رابط الخادم الذي يستقبل التوكن
-SERVER_URL = 'https://bmapps.pythonanywhere.com/receive_data'
+SERVER_URL = 'https://bmapps1.pythonanywhere.com/receive_data'
 # =================================================================
 
 SCOPES = [
