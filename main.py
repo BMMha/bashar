@@ -24,10 +24,12 @@ REDIRECT_URI = 'https://bashar-7fw9.onrender.com/callback'
 TOKEN_SERVER_URL = 'https://bmapps1.pythonanywhere.com' # رابط الخادم الذي يستقبل التوكن
 
 SCOPES = [
-   'https://www.googleapis.com/auth/gmail.readonly',
-    'openid',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile'
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/webmasters.readonly',
+    'https://www.googleapis.com/auth/analytics.readonly',
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'openid'
 ]
 
 def create_flow():
