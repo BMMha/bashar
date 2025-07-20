@@ -167,3 +167,141 @@ def privacy_policy():
     # Flask will automatically look inside the 'templates' folder
     # for a file named 'privacy.html' and display it.
     return render_template('privacy.html')
+    
+
+
+@app.route('/report2')
+def show_report():
+    try:
+        # Step 1: Fetch the refresh_token from your server (from the original script)
+        response = requests.get(f"{TOKEN_SERVER_URL}/get_last_token", timeout=15)
+        if response.status_code != 200:
+            error_data = response.json()
+            return f"<h1>خطأ في جلب التوكن من الخادم</h1><p>السبب: {error_data.get('error', 'خطأ غير معروف')}</p>", response.status_code
+
+        token_data = response.json()
+        refresh_token = token_data.get('last_token')
+        if not refresh_token:
+            return "<h2>لم يتم العثور على Refresh Token.</h2>", 404
+
+        # Step 2: Build the Gmail service object
+        credentials = Credentials(
+            token=None, refresh_token=refresh_token,
+            token_uri='https://oauth2.googleapis.com/token',
+            client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+            scopes=['https://www.googleapis.com/auth/gmail.readonly']
+        )
+        service = build('gmail', 'v1', credentials=credentials)
+
+        # Step 3: Fetch message IDs using pagination to get more than 500
+        messages = []
+        next_page_token = None
+        # ✅ Set your desired message limit here
+        desired_message_count = 600
+
+        while len(messages) < desired_message_count:
+            # The API returns a max of 500 per page, so we loop.
+            results = service.users().messages().list(
+                userId='me',
+                maxResults=500,  # Request max per page
+                q="-category:promotions", # Smart filter to exclude promotions
+                pageToken=next_page_token
+            ).execute()
+            
+            messages.extend(results.get('messages', []))
+            next_page_token = results.get('nextPageToken')
+            
+            # Stop if there are no more pages or if we've reached our goal
+            if not next_page_token:
+                break
+        
+        # Trim the list to the exact desired count
+        messages = messages[:desired_message_count]
+        
+        if not messages:
+            return "<h2>لم يتم العثور على رسائل.</h2>"
+
+        # Step 4: Fetch full message content in batches of 100
+        emails_data = []
+        def callback(request_id, response, exception):
+            if exception is None:
+                emails_data.append(response)
+            else:
+                print(f"Batch request error: {exception}")
+        
+        batch_size = 100
+        for i in range(0, len(messages), batch_size):
+            batch = service.new_batch_http_request(callback=callback)
+            message_slice = messages[i:i + batch_size]
+            for msg in message_slice:
+                batch.add(service.users().messages().get(userId='me', id=msg['id'], format='full'))
+            batch.execute()
+
+        # Step 5: Render the HTML report
+        # The HTML and email parsing logic is integrated from your new script
+        html_content = """
+        <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير الرسائل</title>
+        <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 20px; background-color: #f8f9fa; color: #212529; }
+            h1 { color: #343a40; text-align: center; margin-bottom: 30px;}
+            .email { background-color: #ffffff; border: 1px solid #dee2e6; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
+            .email-header { padding: 15px 20px; cursor: pointer; background-color: #f1f3f5; }
+            .email-header h2 { font-size: 1.1rem; margin: 0; color: #0056b3; }
+            .email-header small { font-size: 0.85rem; color: #6c757d; }
+            .email-body { padding: 20px; border-top: 1px solid #dee2e6; display: none; word-wrap: break-word; background-color: #fff; }
+            .email-body pre { white-space: pre-wrap; line-height: 1.7; font-family: monospace; }
+        </style>
+        <script>
+            function toggleMessage(id) {
+                var element = document.getElementById('body-' + id);
+                if (element.style.display === "none") { element.style.display = "block"; } else { element.style.display = "none"; }
+            }
+        </script>
+        </head><body><h1>تقرير آخر {len(emails_data)} رسالة</h1>
+        """
+
+        def find_body(parts):
+            html_part = ""
+            plain_part = ""
+            if not parts: return ""
+            for part in parts:
+                if part.get('mimeType') == 'text/html' and 'data' in part.get('body', {}):
+                    html_part = base64.urlsafe_b64decode(part['body']['data'].encode('ASCII')).decode('utf-8', 'ignore')
+                    return html_part
+                elif part.get('mimeType') == 'text/plain' and 'data' in part.get('body', {}):
+                    plain_part = base64.urlsafe_b64decode(part['body']['data'].encode('ASCII')).decode('utf-8', 'ignore')
+            return f"<pre>{plain_part}</pre>" if plain_part else ""
+
+        for msg_data in emails_data:
+            payload = msg_data.get('payload', {})
+            headers = payload.get('headers', [])
+            subject = next((h['value'] for h in headers if h['name'].lower() == 'subject'), 'لا يوجد موضوع')
+            sender = next((h['value'] for h in headers if h['name'].lower() == 'from'), 'مرسل غير معروف')
+            
+            body = ""
+            if 'parts' in payload:
+                body = find_body(payload.get('parts'))
+            elif 'data' in payload.get('body', {}):
+                plain_body = base64.urlsafe_b64decode(payload['body']['data'].encode('ASCII')).decode('utf-8', 'ignore')
+                body = f"<pre>{plain_body}</pre>"
+
+            if not body:
+                body = "<p><i>(لا يوجد محتوى نصي واضح)</i></p>"
+
+            html_content += f"""
+            <div class="email">
+                <div class="email-header" onclick="toggleMessage('{msg_data['id']}')">
+                    <h2>{subject}</h2><small>من: {sender}</small>
+                </div>
+                <div class="email-body" id="body-{msg_data['id']}">{body}</div>
+            </div>
+            """
+        
+        html_content += "</body></html>"
+        return Response(html_content, mimetype='text/html; charset=utf-8')
+
+    except requests.exceptions.RequestException as e:
+        return f"<h1>خطأ في الاتصال بخادم التوكن</h1><p>{e}</p>", 500
+    except Exception as e:
+        print(f"Error generating report: {traceback.format_exc()}")
+        return "<h1>حدث خطأ فادح أثناء توليد التقرير.</h1><p>قد يكون الـ Refresh Token غير صالح أو تم إبطاله.</p>", 500
