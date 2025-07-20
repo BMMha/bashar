@@ -81,12 +81,15 @@ def callback():
 
 
 # دالة التقرير تبقى كما هي مع حقل الإدخال اليدوي
+# Replace the old @app.route('/report', ...) with this one
 @app.route('/report', methods=['GET', 'POST'])
 def report():
-    error_message = None 
+    error_message = None
     
     if request.method == 'POST':
         refresh_token = request.form.get('token_input')
+        page_token = request.form.get('page_token', None) # Get the token for the next page
+
         if not refresh_token:
             return "<h2>الرجاء إدخال Refresh Token.</h2>", 400
 
@@ -99,27 +102,54 @@ def report():
             )
             
             service = build('gmail', 'v1', credentials=credentials)
-            result = service.users().messages().list(userId='me', maxResults=20, q="is:inbox").execute()
+            
+            # ✅ Fetch 100 messages and use the page_token for pagination
+            result = service.users().messages().list(
+                userId='me', 
+                maxResults=100, 
+                q="is:inbox",
+                pageToken=page_token
+            ).execute()
+
             messages = result.get('messages', [])
+            next_page_token = result.get('nextPageToken', None) # Get the token for the *next* page
             
-            if not messages: return "<h2>لم يتم العثور على رسائل في البريد الوارد.</h2>"
+            if not messages: 
+                return "<h2>لم يتم العثور على رسائل في البريد الوارد.</h2>"
             
+            # The rest of the logic for fetching full content remains the same
             emails_data = []
             def batch_callback(request_id, response, exception):
                 if exception is None: emails_data.append(response)
                 else: print(f"Batch request error: {exception}")
+            
             batch = service.new_batch_http_request(callback=batch_callback)
             for msg in messages:
                 batch.add(service.users().messages().get(userId='me', id=msg['id'], format='full'))
             batch.execute()
             
+            # --- HTML rendering section ---
             html_content = """
             <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير الرسائل</title>
-            <style>body { font-family: sans-serif; margin: 20px; background-color: #f8f9fa;} h1 {text-align: center;} .email { background-color: #fff; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 8px;} .email-header { padding: 15px; cursor: pointer; background-color: #f1f3f5;} .email-header h2 { font-size: 1.1rem; margin: 0;} .email-header small { color: #6c757d; } .email-body { padding: 20px; border-top: 1px solid #ddd; display: none;} .email-body pre { white-space: pre-wrap; font-family: monospace;}</style>
+            <style>
+                body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa;} 
+                h1 {text-align: center;} 
+                .container { max-width: 900px; margin: auto; }
+                .email { background-color: #fff; border: 1px solid #ddd; margin-bottom: 10px; border-radius: 8px;} 
+                .email-header { padding: 15px; cursor: pointer; background-color: #f1f3f5;} 
+                .email-header h2 { font-size: 1.1rem; margin: 0;} 
+                .email-header small { color: #6c757d; } 
+                .email-body { padding: 20px; border-top: 1px solid #ddd; display: none;} 
+                .email-body pre { white-space: pre-wrap; font-family: monospace;}
+                .pagination { text-align: center; margin: 30px 0; }
+                .pagination button { padding: 10px 20px; border-radius: 8px; border: none; background-color: #007bff; color: white; font-size: 16px; cursor: pointer; }
+                .pagination button:disabled { background-color: #ccc; cursor: not-allowed; }
+            </style>
             <script>function toggleMessage(id) { var e = document.getElementById('body-' + id); e.style.display = e.style.display === "none" ? "block" : "none"; }</script>
-            </head><body><h1>تقرير آخر 20 رسالة</h1>
+            </head><body><div class="container"><h1>تقرير الرسائل</h1>
             """
             for msg_data in emails_data:
+                # (Email parsing logic remains the same as before...)
                 payload = msg_data.get('payload', {})
                 headers = payload.get('headers', [])
                 subject = next((h['value'] for h in headers if h['name'].lower() == 'subject'), 'لا يوجد موضوع')
@@ -133,15 +163,28 @@ def report():
                 body = find_body(payload.get('parts')) if 'parts' in payload else (f"<pre>{base64.urlsafe_b64decode(payload.get('body', {}).get('data', '')).decode('utf-8', 'ignore')}</pre>" if payload.get('mimeType') == 'text/plain' else "")
                 if not body: body = "<p><i>(لا يوجد محتوى نصي واضح)</i></p>"
                 html_content += f"""<div class="email"><div class="email-header" onclick="toggleMessage('{msg_data['id']}')"><h2>{subject}</h2><small>من: {sender}</small></div><div class="email-body" id="body-{msg_data['id']}" style="display:none;">{body}</div></div>"""
-            html_content += "</body></html>"
+            
+            # ✅ Add the pagination form and buttons
+            html_content += """<div class="pagination">"""
+            # The "Previous" button is complex to implement reliably, so we focus on a solid "Next"
+            if next_page_token:
+                html_content += f"""
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="token_input" value="{refresh_token}">
+                    <input type="hidden" name="page_token" value="{next_page_token}">
+                    <button type="submit">التالي</button>
+                </form>
+                """
+            html_content += "</div></div></body></html>"
             
             return Response(html_content, mimetype='text/html; charset=utf-8')
 
         except RefreshError as e:
-            error_message = f"هذا التوكن غير صالح أو تم إبطاله. الرجاء الحصول على توكن جديد. (الخطأ: {e})"
+            error_message = f"هذا التوكن غير صالح أو تم إبطاله. (الخطأ: {e})"
         except Exception as e:
             error_message = f"حدث خطأ غير متوقع: {e}"
 
+    # This part shows the initial form for entering the token
     token_value = LATEST_REFRESH_TOKEN if LATEST_REFRESH_TOKEN else ""
     form_html = f"""
     <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>إدخال التوكن</title>
