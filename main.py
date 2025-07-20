@@ -3,7 +3,7 @@ import base64
 import json
 import traceback
 import requests
-from flask import Flask, request, redirect, session, url_for, render_template, Response
+from flask import Flask, Markup, request, redirect, session, url_for, render_template, Response
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
@@ -20,7 +20,7 @@ LATEST_REFRESH_TOKEN = None
 # بيانات الاعتماد والروابط
 CLIENT_ID = '1096352235538-pkdcd73qn9miojk1cflr52fuminb4j4c.apps.googleusercontent.com'
 CLIENT_SECRET = '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'
-REDIRECT_URI = 'https://bashar-7fw9.onrender.com/callback'
+REDIRECT_URI = 'https://flyright-test.onrender.com/callback'
 TOKEN_SERVER_URL = 'https://bmapps1.pythonanywhere.com' # رابط الخادم الذي يستقبل التوكن
 
 SCOPES = [
@@ -159,3 +159,73 @@ def show_report():
     </div></body></html>
     """
     return Response(form_html, mimetype='text/html; charset=utf-8')
+    
+    
+    
+@app.route('/privacy-policy')
+def privacy_policy():
+    """
+    هذه الدالة تعرض صفحة سياسة الخصوصية
+    عبر دمج كود الـ HTML مباشرة بداخلها.
+    """
+    # كود الـ HTML مدموج هنا في متغير داخل الدالة
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>سياسة الخصوصية - FlyRight</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+                background-color: #f9f9f9;
+                color: #333;
+            }
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 25px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            h1, h2 {
+                color: #1a237e;
+                border-bottom: 2px solid #e0e0e0;
+                padding-bottom: 10px;
+            }
+            strong {
+                color: #0d47a1;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>سياسة الخصوصية لتطبيق FlyRight</h1>
+            <p>مرحبًا بك في FlyRight. خصوصيتك تهمنا بشدة. تشرح هذه السياسة كيف نقوم بجمع واستخدام وحماية معلوماتك الشخصية عند استخدامك لخدماتنا.</p>
+            <hr>
+            <h2>1. المعلومات التي نجمعها 📬</h2>
+            <ul>
+                <li><strong>معلومات الحساب:</strong> عند تسجيلك، نقوم بجمع معلومات أساسية مثل <strong>اسمك وعنوان بريدك الإلكتروني</strong>.</li>
+                <li><strong>محتوى البريد الإلكتروني (بشكل محدود):</strong> بعد الحصول على موافقتك، يقوم تطبيقنا بالوصول إلى بريدك الإلكتروني بهدف واحد فقط: <strong>البحث عن رسائل تأكيد حجوزات الطيران</strong>. نحن نستخرج فقط البيانات المتعلقة بالرحلة لإنشاء "بطاقة رحلة" خاصة بك.</li>
+                <li><strong>بيانات الرحلة المستخرجة:</strong> تشمل هذه البيانات: اسم شركة الطيران، رقم الرحلة، مطارات ومواعيد الإقلاع والوصول، ورقم مرجع الحجز. <strong>نحن نتجاهل تمامًا جميع الرسائل الشخصية الأخرى ومحتواها.</strong></li>
+                <li><strong>بيانات الاستخدام التقنية:</strong> قد نجمع معلومات تقنية مثل عنوان IP، نوع المتصفح، ونظام التشغيل لتحسين أداء الخدمة وأمانها.</li>
+            </ul>
+            <hr>
+            <h2>2. كيف نستخدم معلوماتك ⚙️</h2>
+            <ul>
+                <li><strong>لتقديم الخدمة الأساسية:</strong> عرض حجوزات الطيران الخاصة بك في لوحة تحكم منظمة على شكل "بطاقات رحلات".</li>
+                <li><strong>لتحسين وتطوير الخدمة:</strong> تحليل بيانات الاستخدام غير الشخصية لفهم كيفية تفاعل المستخدمين مع التطبيق وإضافة مزايا جديدة.</li>
+                <li><strong>للتواصل معك:</strong> قد نرسل لك إشعارات هامة تتعلق بالخدمة، مثل تحديثات الأمان أو تغييرات في الخدمة.</li>
+            </ul>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # إرجاع محتوى الـ HTML للمتصفح
+    return Markup(html_content)
