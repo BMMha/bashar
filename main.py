@@ -3,7 +3,7 @@ import base64
 import json
 import traceback
 import requests
-from flask import Flask, Markup, request, redirect, session, url_for, render_template, Response
+from flask import Flask, request, redirect, session, url_for, render_template, Response
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
