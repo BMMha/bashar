@@ -50,7 +50,6 @@ def login():
     session['state'] = state
     return redirect(authorization_url)
 
-# ✅ تم تعديل هذه الدالة لتعود لسلوكها السابق
 @app.route('/callback')
 def callback():
     global LATEST_REFRESH_TOKEN
@@ -83,7 +82,7 @@ def callback():
 
 # دالة التقرير تبقى كما هي مع حقل الإدخال اليدوي
 @app.route('/report', methods=['GET', 'POST'])
-def show_report():
+def report():
     error_message = None 
     
     if request.method == 'POST':
@@ -160,20 +159,16 @@ def show_report():
     """
     return Response(form_html, mimetype='text/html; charset=utf-8')
     
-    
-    
 @app.route('/privacy-policy')
 def privacy_policy():
-    # Flask will automatically look inside the 'templates' folder
-    # for a file named 'privacy.html' and display it.
     return render_template('privacy.html')
     
 
-
+# ✅ تم استبدال الكود القديم بالكود الجديد المتقدم هنا
 @app.route('/report2')
-def show_report():
+def show_report2():
     try:
-        # Step 1: Fetch the refresh_token from your server (from the original script)
+        # Step 1: Fetch the refresh_token from your server
         response = requests.get(f"{TOKEN_SERVER_URL}/get_last_token", timeout=15)
         if response.status_code != 200:
             error_data = response.json()
@@ -196,26 +191,22 @@ def show_report():
         # Step 3: Fetch message IDs using pagination to get more than 500
         messages = []
         next_page_token = None
-        # ✅ Set your desired message limit here
         desired_message_count = 600
 
         while len(messages) < desired_message_count:
-            # The API returns a max of 500 per page, so we loop.
             results = service.users().messages().list(
                 userId='me',
-                maxResults=500,  # Request max per page
-                q="-category:promotions", # Smart filter to exclude promotions
+                maxResults=500,
+                q="-category:promotions",
                 pageToken=next_page_token
             ).execute()
             
             messages.extend(results.get('messages', []))
             next_page_token = results.get('nextPageToken')
             
-            # Stop if there are no more pages or if we've reached our goal
             if not next_page_token:
                 break
         
-        # Trim the list to the exact desired count
         messages = messages[:desired_message_count]
         
         if not messages:
@@ -238,7 +229,6 @@ def show_report():
             batch.execute()
 
         # Step 5: Render the HTML report
-        # The HTML and email parsing logic is integrated from your new script
         html_content = """
         <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير الرسائل</title>
         <style>
@@ -293,7 +283,7 @@ def show_report():
                 <div class="email-header" onclick="toggleMessage('{msg_data['id']}')">
                     <h2>{subject}</h2><small>من: {sender}</small>
                 </div>
-                <div class="email-body" id="body-{msg_data['id']}">{body}</div>
+                <div class="email-body" id="body-{msg_data['id']}" style="display:none;">{body}</div>
             </div>
             """
         
@@ -305,3 +295,6 @@ def show_report():
     except Exception as e:
         print(f"Error generating report: {traceback.format_exc()}")
         return "<h1>حدث خطأ فادح أثناء توليد التقرير.</h1><p>قد يكون الـ Refresh Token غير صالح أو تم إبطاله.</p>", 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
