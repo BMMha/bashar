@@ -107,7 +107,7 @@ def report():
             result = service.users().messages().list(
                 userId='me', 
                 maxResults=100, 
-                q="is:inbox",
+                q="-category:promotions",
                 pageToken=page_token
             ).execute()
 
