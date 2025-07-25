@@ -31,7 +31,68 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly',
     'openid'
 ]
+HTML_FORM = """
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إرسال طلب مشفر</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f9; }
+        textarea { width: 100%; box-sizing: border-box; }
+        input[type=submit] { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .result { background-color: #e3e3e3; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>أداة إرسال الطلبات المشفرة</h1>
+    <form method="post">
+        <label for="encrypted_data">أدخل البيانات المشفرة هنا:</label><br>
+        <textarea name="encrypted_data" rows="10" cols="80"></textarea><br><br>
+        <input type="submit" value="إرسال">
+    </form>
+</body>
+</html>
+"""
 
+@app.route('/send', methods=['GET', 'POST'])
+def send():
+    # إذا كان الطلب من نوع GET (الزيارة الأولى للصفحة)
+    if request.method == 'GET':
+        return HTML_FORM
+
+    # إذا كان الطلب من نوع POST (بعد النقر على زر الإرسال)
+    if request.method == 'POST':
+        # 1. استلام البيانات المشفرة من حقل الإدخال
+        encrypted_data = request.form.get('encrypted_data', '')
+        if not encrypted_data:
+            return "<h2>خطأ: حقل البيانات فارغ. الرجاء إدخال البيانات المشفرة.</h2>" + HTML_FORM
+
+        # 2. تجهيز الطلب (نفس الكود السابق)
+        url = 'https://jaib.com.ye:5076'
+        payload = {"value": encrypted_data}
+        headers = {"Content-Type": "application/json"}
+
+        # سنقوم ببناء صفحة HTML لعرض النتيجة
+        output_html = "<h1>النتيجة:</h1>"
+        
+        try:
+            # 3. إرسال الطلب
+            response = requests.post(url, json=payload, headers=headers)
+            response.raise_for_status()
+
+            # 4. عرض النتيجة
+            output_html += "<h2>نجاح! ✅</h2><h3>استجابة الخادم:</h3>"
+            output_html += f"<div class='result'><pre>{json.dumps(response.json(), indent=2, ensure_ascii=False)}</pre></div>"
+
+        except requests.exceptions.RequestException as e:
+            output_html += "<h2>فشل! ❌</h2>"
+            output_html += f"<div class='result'>An error occurred: {e}</div>"
+        
+        # إضافة الفورم مرة أخرى أسفل النتيجة لإعادة الاستخدام
+        output_html += "<hr><h2>إرسال طلب جديد:</h2>" + HTML_FORM
+        return output_html
+        
 def create_flow():
     return Flow.from_client_config(
         client_config={ "web": { "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "redirect_uris": [REDIRECT_URI] }},
