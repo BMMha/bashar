@@ -9,6 +9,8 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from googleapiclient.http import BatchHttpRequest
 from google.auth.exceptions import RefreshError
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 app = Flask(__name__)
 app.secret_key = 'a_very_long_and_super_secret_string_for_my_app'
