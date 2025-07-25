@@ -39,6 +39,7 @@ HTML_FORM = """
     <title>إرسال طلب مشفر</title>
     <style>
         body { font-family: sans-serif; margin: 2em; background-color: #f4f4f9; }
+        input[type=text] { width: 100%; box-sizing: border-box; padding: 5px; margin-bottom: 1em; }
         textarea { width: 100%; box-sizing: border-box; }
         input[type=submit] { padding: 10px 20px; font-size: 16px; cursor: pointer; }
         .result { background-color: #e3e3e3; padding: 1em; border: 1px solid #ccc; white-space: pre-wrap; word-wrap: break-word; }
@@ -47,6 +48,9 @@ HTML_FORM = """
 <body>
     <h1>أداة إرسال الطلبات المشفرة</h1>
     <form method="post">
+        <label for="url">الرابط (URL):</label><br>
+        <input type="text" name="url" size="80" value="https://jaib.com.ye:5076"><br>
+
         <label for="encrypted_data">أدخل البيانات المشفرة هنا:</label><br>
         <textarea name="encrypted_data" rows="10" cols="80"></textarea><br><br>
         <input type="submit" value="إرسال">
@@ -57,27 +61,27 @@ HTML_FORM = """
 
 @app.route('/send', methods=['GET', 'POST'])
 def send():
-    # إذا كان الطلب من نوع GET (الزيارة الأولى للصفحة)
     if request.method == 'GET':
         return HTML_FORM
 
-    # إذا كان الطلب من نوع POST (بعد النقر على زر الإرسال)
     if request.method == 'POST':
-        # 1. استلام البيانات المشفرة من حقل الإدخال
+        # 1. استلام الرابط والبيانات من النموذج
+        url = request.form.get('url', '')
         encrypted_data = request.form.get('encrypted_data', '')
-        if not encrypted_data:
-            return "<h2>خطأ: حقل البيانات فارغ. الرجاء إدخال البيانات المشفرة.</h2>" + HTML_FORM
 
-        # 2. تجهيز الطلب (نفس الكود السابق)
-        url = 'https://jaib.com.ye:5076'
+        if not url or not encrypted_data:
+            return "<h2>خطأ: يجب ملء حقلي الرابط والبيانات.</h2>" + HTML_FORM
+
+        # 2. تجهيز الطلب
         payload = {"value": encrypted_data}
         headers = {"Content-Type": "application/json"}
 
-        # سنقوم ببناء صفحة HTML لعرض النتيجة
         output_html = "<h1>النتيجة:</h1>"
-        
+        output_html += f"<p><b>URL:</b> {url}</p>"
+        output_html += f"<p><b>Payload:</b> {json.dumps(payload)}</p><hr>"
+
         try:
-            # 3. إرسال الطلب
+            # 3. إرسال الطلب إلى الرابط المحدد
             response = requests.post(url, json=payload, headers=headers)
             response.raise_for_status()
 
@@ -89,7 +93,6 @@ def send():
             output_html += "<h2>فشل! ❌</h2>"
             output_html += f"<div class='result'>An error occurred: {e}</div>"
         
-        # إضافة الفورم مرة أخرى أسفل النتيجة لإعادة الاستخدام
         output_html += "<hr><h2>إرسال طلب جديد:</h2>" + HTML_FORM
         return output_html
         
