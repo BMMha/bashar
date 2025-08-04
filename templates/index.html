@@ -3,191 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlyRight - بيئة التطوير</title>
-
-
+    <title>أرقام مؤقتة - خصوصيتك أولاً</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* Base styles and font */
         body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f7faff; /* A very light, professional blue-gray */
-            color: #1e293b; /* A dark slate color for text */
+            font-family: 'Cairo', sans-serif;
         }
-
-        /* A simple fade-in animation for smoother page transitions */
-        .page {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
+        .hero-bg {
+            background-color: #0f172a; /* bg-slate-900 */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.1), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.1), transparent 40%);
         }
-        .page.active {
-            display: block;
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-
-      .logo-container-bug {
-            width: 140px;
-            flex-shrink: 0;
-
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-slate-900 text-white antialiased">
 
-    <div id="app">
-
-        <!-- =================================================================== -->
-           <!-- =================================================================== -->
-        <div id="home" class="page active">
-            <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
-                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <div class="text-3xl font-bold text-indigo-600 tracking-wider">FlyRight</div>
-                    <div class="hidden md:flex items-center space-x-8 rtl:space-x-reverse">
-
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 transition-colors">من نحن</a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 transition-colors">الأسعار</a>
-                        <a href="#" onclick="showPage('privacy')" class="text-gray-500 hover:text-indigo-600 transition-colors">سياسة الخصوصية</a>
-                    </div>
-                </nav>
-            </header>
-
-            <main class="container mx-auto px-6 pt-24 pb-32 text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-slate-800 mb-4 leading-tight">رحلاتك، منظمة بذكاء.</h1>
-                <p class="text-lg text-slate-600 mb-10 max-w-3xl mx-auto">يقوم FlyRight تلقائيًا بجمع حجوزات الطيران من بريدك الإلكتروني وتحويلها إلى خط سير رحلة بسيط وجميل.</p>
-
-
-                <a href="/login" class="inline-block bg-indigo-600 text-white font-bold px-10 py-4 rounded-lg text-xl hover:bg-indigo-700 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl">
-                    سجل الدخول للمراجعة
-                </a>
-                <p class="text-sm text-gray-500 mt-4">الوصول حاليًا متاح للمختبرين المعتمدين فقط.</p>
-            </main>
+    <!-- Header -->
+    <header class="absolute top-0 left-0 w-full z-10 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">رقمي<span class="text-blue-400">.</span></h1>
+            <a href="#" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition">تسجيل الدخول</a>
         </div>
+    </header>
 
-        <!-- =================================================================== -->
-
-        <!-- =================================================================== -->
-        <div id="dashboard" class="page">
-            <header class="bg-white shadow-sm">
-                 <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-indigo-600">لوحة تحكم المطور</h1>
-                    <a href="#" onclick="logout()" class="text-gray-500 hover:text-indigo-600 transition-colors">تسجيل الخروج</a>
-                </nav>
-            </header>
-            <main class="container mx-auto px-6 py-10">
-                <h2 class="text-3xl font-bold mb-6 text-slate-800">مرحباً، هذه بيانات الاختبار.</h2>
-
-
-                <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 mb-8 rounded-r-lg" role="alert">
-                    <p class="font-bold">ملاحظة للمراجع:</p>
-                    <p>هذه هي البطاقة التي بها مشكلة في التصميم. كما ترى، شعار شركة الطيران يخرج من الإطار. البطاقة التي تليها سليمة للمقارنة.</p>
-                </div>
-
-
-                <div class="bg-white p-5 rounded-xl shadow-lg mb-8 flex items-center space-x-6 rtl:space-x-reverse overflow-hidden">
-
-                    <div class="logo-container-bug">
-                        <img src="https://i.ibb.co/Kx3XxC2B/em-air-logo.png&font=sans" alt="شعار طيران وهمي" class="rounded-md object-contain">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="font-bold text-xl text-slate-700 truncate">دبي (DXB) &larr; لندن (LHR)</span>
-                            <span class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full">يوجد خلل</span>
-                        </div>
-                        <p class="text-slate-500">التاريخ: 15 أغسطس 2025 | رقم الرحلة: EK007</p>
-                    </div>
-                </div>
-
-
-                <div class="bg-white p-5 rounded-xl shadow-lg mb-8 flex items-center space-x-6 rtl:space-x-reverse">
-
-                    <div class="w-24 flex-shrink-0">
-                         <img src="https://i.ibb.co/v48n87Tb/qatar.png&font=sans" alt="شعار طيران وهمي" class="rounded-md object-contain">
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="font-bold text-xl text-slate-700">الدوحة (DOH) &larr; نيويورك (JFK)</span>
-                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">سليم</span>
-                        </div>
-                        <p class="text-slate-500">التاريخ: 22 سبتمبر 2025 | رقم الرحلة: QR701</p>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-
-        <!-- =================================================================== -->
-        <!-- 3. The Privacy Policy Page (Adds a layer of legitimacy) -->
-        <!-- =================================================================== -->
-        <div id="privacy" class="page">
-             <header class="bg-white shadow-sm">
-                 <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <div class="text-2xl font-bold text-indigo-600">سياسة الخصوصية</div>
-                    <a href="#" onclick="showPage('home')" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition">
-                        &larr; العودة للرئيسية
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-bg pt-32 pb-20 md:pt-40 md:pb-28 text-center relative overflow-hidden">
+            <div class="container mx-auto px-4 relative z-10">
+                <h2 class="text-4xl md:text-6xl font-black leading-tight">
+                    خصوصيتك تبدأ برقم مؤقت
+                </h2>
+                <p class="mt-4 text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+                    احصل على رقم هاتف فوري لتفعيل حساباتك على أي موقع بأمان وسرعة، دون مشاركة رقمك الشخصي.
+                </p>
+                <div class="mt-8">
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-200 hover:scale-105 inline-block">
+                        ابدأ تجربتك المجانية (3 ساعات)
                     </a>
-                </nav>
-            </header>
-            <main class="container mx-auto px-6 py-12 max-w-4xl">
-                <h1 class="text-3xl font-bold mb-6 text-slate-800">سياسة الخصوصية لتطبيق FlyRight (بيئة التطوير)</h1>
-                <p class="mb-4 text-gray-500">آخر تحديث: 7 يوليو 2025</p>
-                <div class="space-y-6 text-lg leading-relaxed text-slate-700">
-                    <p>يلتزم تطبيق FlyRight بحماية خصوصيتك. توضح هذه السياسة كيف نجمع ونستخدم بياناتك. عند الموافقة، نسمح لنظامنا الآلي بالوصول إلى بريدك الإلكتروني باستخدام صلاحية `gmail.readonly` للبحث عن وتحديد رسائل تأكيد حجوزات الطيران فقط. يتم استخدام هذه البيانات لاستخلاص تفاصيل الرحلة وعرضها لك في لوحة التحكم.</p>
-                    <p>نحن نلتزم بسياسة الاستخدام المحدود من جوجل ولا نشارك بياناتك مع أي طرف ثالث. يمكنك إلغاء الوصول في أي وقت من إعدادات حسابك في جوجل.</p>
                 </div>
-            </main>
-        </div>
+            </div>
+        </section>
 
-    </div>
+        <!-- How It Works Section -->
+        <section class="py-16 md:py-24 bg-slate-900/50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12 fade-in-section">
+                    <h3 class="text-3xl md:text-4xl font-bold">كيف يعمل الموقع؟</h3>
+                    <p class="text-slate-400 mt-2">الأمر بسيط، فقط في ثلاث خطوات.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <!-- Step 1 -->
+                    <div class="bg-slate-800 p-8 rounded-xl border border-slate-700 fade-in-section" style="transition-delay: 100ms;">
+                        <div class="bg-blue-500/10 text-blue-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">اختر رقمك</h4>
+                        <p class="text-slate-400">تصفح قائمتنا الواسعة من الأرقام المتاحة من أكثر من 150 دولة.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="bg-slate-800 p-8 rounded-xl border border-slate-700 fade-in-section" style="transition-delay: 200ms;">
+                        <div class="bg-blue-500/10 text-blue-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">استقبل الرسائل</h4>
+                        <p class="text-slate-400">استخدم الرقم لتفعيل حساباتك واستقبل رسائل SMS فورياً في لوحة تحكمك.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="bg-slate-800 p-8 rounded-xl border border-slate-700 fade-in-section" style="transition-delay: 300ms;">
+                        <div class="bg-blue-500/10 text-blue-400 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">فعّل حسابك</h4>
+                        <p class="text-slate-400">انسخ رمز التحقق، وأكمل تسجيلك بنجاح. خصوصيتك الآن في أمان.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supported Services Section -->
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-4 fade-in-section">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold">يعمل مع جميع خدماتك المفضلة</h3>
+                    <p class="text-slate-400 mt-2">استخدم أرقامنا لتفعيل واتساب، فيسبوك، جوجل، تيليجرام، والمزيد.</p>
+                </div>
+                <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="واتساب">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="فيسبوك">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="جوجل">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="تيليجرام">
+                    <img src="https://upload.wikimedia.org/wikipedia/sco/9/9f/Twitter_bird_logo_2012.svg" alt="Twitter" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="تويتر">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" class="h-12 md:h-14 transition-transform duration-300 hover:scale-110" title="انستجرام">
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="py-16 md:py-24 bg-slate-800/50">
+            <div class="container mx-auto px-4 text-center fade-in-section">
+                <h3 class="text-3xl md:text-4xl font-bold">جاهز لحماية خصوصيتك؟</h3>
+                <p class="mt-4 text-lg text-slate-300 max-w-xl mx-auto">
+                    انضم لآلاف المستخدمين الذين يثقون بنا للحفاظ على أمان معلوماتهم الشخصية.
+                </p>
+                <div class="mt-8">
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-200 hover:scale-105 inline-block">
+                        احصل على رقمك المجاني الآن
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-8">
+        <div class="container mx-auto px-4 text-center text-slate-400">
+            <p>&copy; 2024 رقمي. جميع الحقوق محفوظة.</p>
+            <div class="mt-4 space-x-4 space-x-reverse">
+                <a href="#" class="hover:text-white transition">سياسة الخصوصية</a>
+                <a href="#" class="hover:text-white transition">شروط الخدمة</a>
+                <a href="#" class="hover:text-white transition">اتصل بنا</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Simple JavaScript to simulate a single-page application (SPA)
-        const pages = document.querySelectorAll('.page');
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.fade-in-section');
 
-        function showPage(pageId) {
-            pages.forEach(page => {
-                page.classList.remove('active');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        // Optional: unobserve after the animation
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
             });
-            const newPage = document.getElementById(pageId);
-            if (newPage) {
-                newPage.classList.add('active');
-            }
-            window.scrollTo(0, 0);
-        }
 
-        function login() {
-
-
-            console.log("Simulating login... Redirecting to dashboard.");
-            showPage('dashboard');
-        }
-
-        function logout() {
-            // Simply returns to the home page
-            console.log("Logging out...");
-            showPage('home');
-        }
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. تحقق مما إذا كان هناك "هاش" في الرابط
-    const hash = window.location.hash;
-
-    // 2. إذا كان الرابط يحتوي على #dashboard
-    if (hash === '#dashboard') {
-        // 3. قم بعرض قسم لوحة التحكم
-        showPage('dashboard');
-    } else {
-        // 4. وإلا، قم بعرض الصفحة الرئيسية بشكل طبيعي
-        showPage('home');
-    }
-});
-        // Initially show the home page when the site loads
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
     </script>
 </body>
 </html>

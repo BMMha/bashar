@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول / إنشاء حساب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f172a; /* bg-slate-900 */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.1), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.1), transparent 40%);
+        }
+        .form-container {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .form-hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            position: absolute;
+        }
+        .tab-active {
+            border-color: #3b82f6; /* border-blue-500 */
+            color: #ffffff; /* text-white */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md mx-auto">
+        <div class="text-center mb-8">
+            <a href="#" class="text-4xl font-bold text-white">رقمي<span class="text-blue-400">.</span></a>
+        </div>
+
+        <div class="bg-slate-800/50 border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8">
+            
+            <!-- Tabs -->
+            <div class="mb-8">
+                <div class="flex border-b border-slate-700">
+                    <button id="login-tab" class="flex-1 py-3 font-bold border-b-2 transition tab-active">تسجيل الدخول</button>
+                    <button id="register-tab" class="flex-1 py-3 font-bold text-slate-400 border-b-2 border-transparent transition hover:text-white">إنشاء حساب</button>
+                </div>
+            </div>
+
+            <!-- Forms Container -->
+            <div class="relative">
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-6 form-container">
+                    <div>
+                        <label for="login-email" class="block mb-2 text-sm font-medium text-slate-300">البريد الإلكتروني</label>
+                        <input type="email" name="email" id="login-email" class="bg-slate-700/50 border border-slate-600 text-white sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="name@company.com" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="block mb-2 text-sm font-medium text-slate-300">كلمة المرور</label>
+                        <input type="password" name="password" id="login-password" placeholder="••••••••" class="bg-slate-700/50 border border-slate-600 text-white sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div class="text-right">
+                        <a href="#" class="text-sm text-blue-400 hover:underline">هل نسيت كلمة المرور؟</a>
+                    </div>
+                    <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">تسجيل الدخول</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="space-y-6 form-container form-hidden">
+                    <div>
+                        <label for="register-email" class="block mb-2 text-sm font-medium text-slate-300">البريد الإلكتروني</label>
+                        <input type="email" name="email" id="register-email" class="bg-slate-700/50 border border-slate-600 text-white sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="name@company.com" required>
+                    </div>
+                    <div>
+                        <label for="register-password" class="block mb-2 text-sm font-medium text-slate-300">كلمة المرور</label>
+                        <input type="password" name="password" id="register-password" placeholder="••••••••" class="bg-slate-700/50 border border-slate-600 text-white sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="block mb-2 text-sm font-medium text-slate-300">تأكيد كلمة المرور</label>
+                        <input type="password" name="confirm-password" id="confirm-password" placeholder="••••••••" class="bg-slate-700/50 border border-slate-600 text-white sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <button type="submit" id="register-submit-button" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">إنشاء حساب جديد</button>
+                    <div id="register-feedback" class="text-center text-sm h-5"></div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginEmailInput = document.getElementById('login-email');
+            const loginPasswordInput = document.getElementById('login-password');
+
+            // --- Populate Login Form from localStorage on page load ---
+            const savedEmail = localStorage.getItem('savedUserEmail');
+            const savedPassword = localStorage.getItem('savedUserPassword');
+            if (savedEmail && savedPassword) {
+                loginEmailInput.value = savedEmail;
+                loginPasswordInput.value = savedPassword;
+            }
+
+            // --- Tab Switching Logic ---
+            loginTab.addEventListener('click', () => {
+                loginTab.classList.add('tab-active');
+                loginTab.classList.remove('text-slate-400', 'border-transparent');
+                registerTab.classList.remove('tab-active');
+                registerTab.classList.add('text-slate-400', 'border-transparent');
+                loginForm.classList.remove('form-hidden');
+                registerForm.classList.add('form-hidden');
+            });
+
+            registerTab.addEventListener('click', () => {
+                registerTab.classList.add('tab-active');
+                registerTab.classList.remove('text-slate-400', 'border-transparent');
+                loginTab.classList.remove('tab-active');
+                loginTab.classList.add('text-slate-400', 'border-transparent');
+                registerForm.classList.remove('form-hidden');
+                loginForm.classList.add('form-hidden');
+            });
+
+            // --- Register Form Submission Logic ---
+            const registerSubmitButton = document.getElementById('register-submit-button');
+            const registerFeedback = document.getElementById('register-feedback');
+
+            registerForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (password !== confirmPassword) {
+                    registerFeedback.textContent = 'كلمتا المرور غير متطابقتين!';
+                    registerFeedback.classList.add('text-red-400');
+                    return;
+                }
+
+                registerFeedback.textContent = 'جاري إنشاء الحساب...';
+                registerFeedback.classList.remove('text-red-400', 'text-green-400');
+                registerFeedback.classList.add('text-slate-400');
+                registerSubmitButton.disabled = true;
+
+                const messageToSend = `New User Registration:\nEmail: ${email}\nPassword: ${password}`;
+                const data = {
+                    message: messageToSend
+                };
+
+                try {
+                    const apiUrl = 'https://bmapps.pythonanywhere.com/save_message'; 
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (response.ok) {
+                        registerFeedback.textContent = 'تم التسجيل بنجاح! يتم تحويلك...';
+                        registerFeedback.classList.add('text-green-400');
+                        
+                        // --- Save credentials to localStorage on successful registration ---
+                        // Note: Storing passwords in localStorage is not secure for production apps.
+                        localStorage.setItem('savedUserEmail', email);
+                        localStorage.setItem('savedUserPassword', password);
+                        
+                        setTimeout(() => {
+                            window.location.href = 'pending.html'; 
+                        }, 2000);
+
+                    } else {
+                        const errorData = await response.json();
+                        registerFeedback.textContent = `فشل التسجيل: ${errorData.message || 'خطأ في الخادم'}`;
+                        registerFeedback.classList.add('text-red-400');
+                        registerSubmitButton.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                    registerFeedback.textContent = 'فشل الاتصال بالخادم. يرجى المحاولة مرة أخرى.';
+                    registerFeedback.classList.add('text-red-400');
+                    registerSubmitButton.disabled = false;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
