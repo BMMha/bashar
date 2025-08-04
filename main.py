@@ -61,6 +61,33 @@ HTML_FORM = """
 </html>
 """
 
+@app.route('/join')
+def display_join():
+    """
+    هذه الدالة تعرض صفحة join.html من مجلد 'templates'
+    (صفحة تسجيل الدخول والإنشاء)
+    """
+    # تأكد من أن اسم الملف مطابق تماماً لما هو موجود في مجلد templates
+    # في الصورة، اسم الملف هو join.html
+    return render_template('join.html')
+
+@app.route('/dashboard')
+def display_dashboard():
+    """
+    هذه الدالة تعرض صفحة dashboard.html من مجلد 'templates'
+    (لوحة التحكم)
+    """
+    return render_template('dashboard.html')
+
+@app.route('/progress')
+def display_progress():
+    """
+    هذه الدالة تعرض صفحة progress.html من مجلد 'templates'
+    (صفحة انتظار المراجعة)
+    """
+    # في الصورة، اسم الملف هو progress.html
+    return render_template('progress.html')
+
 @app.route('/send', methods=['GET', 'POST'])
 def send():
     if request.method == 'GET':
