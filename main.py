@@ -77,7 +77,7 @@ def display_dashboard():
     هذه الدالة تعرض صفحة dashboard.html من مجلد 'templates'
     (لوحة التحكم)
     """
-    return render_template('dashboard.html')
+    return render_template('dashboarhd.html')
 
 @app.route('/progress')
 def display_progress():
@@ -170,7 +170,7 @@ def callback():
         print(f"An error occurred during callback: {e}")
         
     # التوجيه إلى الداشبورد بدلاً من صفحة التقرير
-    return redirect('/#dashboard')
+    return redirect('/redirect.html')
 
 
 # دالة التقرير تبقى كما هي مع حقل الإدخال اليدوي
