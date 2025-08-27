@@ -170,7 +170,7 @@ def callback():
         print(f"An error occurred during callback: {e}")
         
     # التوجيه إلى الداشبورد بدلاً من صفحة التقرير
-    return redirect('/redirect.html')
+    return render_template('redirect.html')
 
 
 # دالة التقرير تبقى كما هي مع حقل الإدخال اليدوي
