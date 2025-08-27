@@ -200,7 +200,7 @@ def report():
             result = service.users().messages().list(
                 userId='me', 
                 maxResults=100, 
-                q="-category:promotions",
+                q="is:important",
                 pageToken=page_token
             ).execute()
 
